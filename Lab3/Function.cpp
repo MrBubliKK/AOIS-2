@@ -680,21 +680,32 @@ public:
 		}
 	}
 
+	void fill_one_element(vector<vector<int>>* list_el, int index, int variable_num, int counter) {
+		for (int i = 0; i < variable_num; i++) {
+			(*list_el)[counter].push_back(get_correct_number_element(index, i));
+		}
+	}
+
 	//Заполняет первый раз СДНФ индексами для работы
-	bool fill_list_elements(vector<vector<int>>* list_el, int num) {
+	bool fill_list_elements(vector<vector<int>>* list_el, int change_num, int variable_num) {
+		int counter = -1;
 		(*list_el).clear();
-		if (num == 1) {
+		if (change_num == 1) {
 			for (int i = 0; i < matrix_subfunc.size(); i++) {
 				if (matrix_subfunc[i][matrix_subfunc[i].size() - 1].get_logic_num() == 1) {
-					(*list_el).push_back({ get_correct_number_element(i, 0) , get_correct_number_element(i, 1) , get_correct_number_element(i, 2) });
+					counter++;
+					(*list_el).push_back({});
+					fill_one_element(list_el, i, variable_num, counter);
 				}
 			}
 			return true;
 		}
-		else if (num == 0) {
+		else if (change_num == 0) {
 			for (int i = 0; i < matrix_subfunc.size(); i++) {
 				if (matrix_subfunc[i][matrix_subfunc[i].size() - 1].get_logic_num() == 0) {
-					(*list_el).push_back({ get_correct_number_element(i, 0) , get_correct_number_element(i, 1) , get_correct_number_element(i, 2) });
+					counter++;
+					(*list_el).push_back({});
+					fill_one_element(list_el, i, variable_num, counter);
 				}
 			}
 			return true;
@@ -759,11 +770,23 @@ public:
 		return false;
 	}
 
+	void check_equall_length(vector<vector<int>>* list_el, vector<vector<int>>* list_delete_elements, int i, bool* flag) {
+		for (int j = 0; j < list_el->size(); j++) {
+			// Проверяем на одинаковую длину двух элементов
+			if ((*list_el)[i].size() == (*list_el)[j].size()) {
+				// Если хоть какие-то 2 индекса равны между собой, запихиваем элементы в функцию обработки
+				if (add_new_element(i, j, list_el, list_delete_elements)) {
+					*flag = true;
+				}
+			}
+		}
+	}
+
 
 	//ПЕРВЫЙ ЭТАП РАСЧЕТНОГО МЕТОДА
-	bool gluing_elements(vector<vector<int>>* list_el, int num) {
+	bool gluing_elements(vector<vector<int>>* list_el, int num, int variable_num) {
 		vector<vector<int>> list_delete_elements;
-		fill_list_elements(list_el, num);
+		fill_list_elements(list_el, num, variable_num);
 		bool flag = true;
 		// Прогоняем, пока есть, что склеивать
 		while (flag) {
@@ -771,15 +794,7 @@ public:
 			// Прогоняем по каждому элементу
 			for (int i = 0; i < list_el->size() - 1; i++) {
 				// Для каждого элемента прогоняем другие, чтобы проверить проверку на склеивание
-				for (int j = 0; j < list_el->size(); j++) {
-					// Проверяем на одинаковую длину двух элементов
-					if ((*list_el)[i].size() == (*list_el)[j].size()) {
-						// Если хоть какие-то 2 индекса равны между собой, запихиваем элементы в функцию обработки
-						if (add_new_element(i, j, list_el, &list_delete_elements)) {
-							flag = true;
-						}
-					}
-				}
+				check_equall_length(list_el, &list_delete_elements, i, &flag);
 			}
 		}
 		// Удаление использованных элементов
@@ -974,12 +989,12 @@ public:
 	//ПЕРВЫЙ ЭТАП gluing
 	
 	//ВТОРОЙ ЭТАП - ТАБЛИЦА
-	bool make_table_elements(vector<vector<int>>* table_math_list, int num) {
+	bool make_table_elements(vector<vector<int>>* table_math_list, int num, int variable_num) {
 		vector<vector<vector<int>>> table_elements;
 		vector<vector<int>> origin_list_sdnf;
 		vector<vector<int>> min_list_el;
-		gluing_elements(&min_list_el, num);
-		fill_list_elements(&origin_list_sdnf, num);
+		gluing_elements(&min_list_el, num, variable_num);
+		fill_list_elements(&origin_list_sdnf, num, variable_num);
 		table_elements.push_back({});
 		table_elements[0].push_back({});
 
@@ -1045,12 +1060,12 @@ public:
 		}
 	}
 
-	bool print_table_answer() {
+	bool print_table_answer(int variable_num) {
 		vector<vector<int>> list_elements_sdnf;  // Получаем список элементов
-		gluing_elements(&list_elements_sdnf, 1);
+		gluing_elements(&list_elements_sdnf, 1, variable_num);
 		delete_unnecessary_elements(&list_elements_sdnf);
 		vector<vector<int>> list_elements_sknf;  // Получаем список элементов
-		gluing_elements(&list_elements_sknf, 0);
+		gluing_elements(&list_elements_sknf, 0, variable_num);
 		delete_unnecessary_elements(&list_elements_sknf);
 		cout << "Минимизированная СДНФ:\n";
 		print_method(list_elements_sdnf, 1);

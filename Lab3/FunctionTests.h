@@ -198,9 +198,9 @@ namespace FunctionTests
 			vector<vector<int>> list_el_sdnf;
 			vector<vector<int>> list_el_sknf;
 			vector<vector<int>> del_list;
-			Assert::IsTrue(func.fill_list_elements(&list_el_sdnf, 1));
-			Assert::IsTrue(func.fill_list_elements(&list_el_sknf, 0));
-			Assert::IsFalse(func.fill_list_elements(&del_list, 2));
+			Assert::IsTrue(func.fill_list_elements(&list_el_sdnf, 1, num));
+			Assert::IsTrue(func.fill_list_elements(&list_el_sknf, 0, num));
+			Assert::IsFalse(func.fill_list_elements(&del_list, 2, num));
 		}
 
 		TEST_METHOD(test_check_exist_element) {
@@ -248,7 +248,7 @@ namespace FunctionTests
 			func.fill_all_subfuncs(num);
 
 			vector<vector<int>> main_list;
-			Assert::IsTrue(func.gluing_elements(&main_list, 1));
+			Assert::IsTrue(func.gluing_elements(&main_list, 1, num));
 		}
 
 		TEST_METHOD(test_delete_unnecessary_elements) {
@@ -263,7 +263,7 @@ namespace FunctionTests
 			func.fill_all_subfuncs(num);
 
 			vector<vector<int>> main_list;
-			func.gluing_elements(&main_list, 1);
+			func.gluing_elements(&main_list, 1, num);
 			Assert::IsTrue(func.delete_unnecessary_elements(&main_list));
 			vector<vector<int>> small_list = {};
 			Assert::IsFalse(func.delete_unnecessary_elements(&small_list));
@@ -281,12 +281,12 @@ namespace FunctionTests
 			func.fill_all_subfuncs(num);
 
 			vector<vector<int>> list_elements_sdnf;  // Получаем список элементов
-			func.gluing_elements(&list_elements_sdnf, 1);
+			func.gluing_elements(&list_elements_sdnf, 1, num);
 			func.delete_unnecessary_elements(&list_elements_sdnf);
 			Assert::IsTrue(func.print_method(list_elements_sdnf, 1));
 
 			vector<vector<int>> list_elements_sknf;  // Получаем список элементов
-			func.gluing_elements(&list_elements_sknf, 0);
+			func.gluing_elements(&list_elements_sknf, 0, num);
 			func.delete_unnecessary_elements(&list_elements_sknf);
 			Assert::IsTrue(func.print_method(list_elements_sknf, 0));
 
@@ -305,11 +305,11 @@ namespace FunctionTests
 			func.fill_all_subfuncs(num);
 
 			vector<vector<int>> table_math_list_sdnf;
-			func.make_table_elements(&table_math_list_sdnf, 1);
+			func.make_table_elements(&table_math_list_sdnf, 1, num);
 			Assert::IsTrue(func.print_method(table_math_list_sdnf, 1));
 
 			vector<vector<int>> table_math_list_sknf;
-			func.make_table_elements(&table_math_list_sknf, 0);
+			func.make_table_elements(&table_math_list_sknf, 0, num);
 			Assert::IsTrue(func.print_method(table_math_list_sknf, 0));
 		}
 
@@ -325,7 +325,7 @@ namespace FunctionTests
 			func.fill_all_subfuncs(num);
 
 			func.print_karno_table(num);
-			Assert::IsTrue(func.print_table_answer());
+			Assert::IsTrue(func.print_table_answer(num));
 		}
 
 	};
